@@ -39,6 +39,7 @@ k3s_cluster:
     # extra_manifests: [ '/path/to/manifest1.yaml', '/path/to/manifest2.yaml' ]
     # airgap_dir: /tmp/k3s-airgap-images
 
+    extra_manifests: ["../my-cluster/manifests/"]
     server_config_yaml:  |
       cluster-init: true
       disable:
