@@ -1,9 +1,14 @@
 ---
 # update all packages
-- name: update all packages
-  apt:
-    update_cache: yes
-    upgrade: dist
-    autoremove: yes
-    autoclean: yes
-    
+- name: Update all packages
+  ansible.builtin.apt:
+    update_cache: true
+    name: "*"
+    state: latest
+    autoclean: true
+    autoremove: true
+    purge: true
+  when: ansible_distribution in ["Debian", "Ubuntu"]
+
+# install extra packages
+- name: Install extra
