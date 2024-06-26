@@ -1,0 +1,9 @@
+---
+# update all packages
+- name: update all packages
+  apt:
+    update_cache: yes
+    upgrade: dist
+    autoremove: yes
+    autoclean: yes
+    
