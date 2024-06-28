@@ -1,0 +1,64 @@
+---
+# update all packages
+- name: Update all packages
+  ansible.builtin.apt:
+    update_cache: true
+    name: "*"
+    state: latest
+    autoclean: true
+    autoremove: true
+    purge: true
+  when: ansible_distribution in ["Debian", "Ubuntu"]
+
+# install extra packages
+- name: Install extra packages
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: latest
+  loop:
+    - bash
+    - curl
+    - util-linux
+    - grep
+    - mawk
+    - open-iscsi
+    - nfs-common
+    - firmware-linux-nonfree
+
+- name: i95 low power mode
+  when: "'GenuineIntel' in ansible_processor"
+  block:
+    # Ensure modprobe folder exists
+    - name: Ensure modprobe folder exists
+      ansible.builtin.file:
+        name: /etc/modprobe.d
+        state: directory
+        mode: "0644"
+
+    # Add i915 kernel parameter
+    - name: Add i915 kernel parameter
+      ansible.builtin.lineinfile:
+        path: /etc/modprobe.d/i915.conf
+        line: "options i915 enable_guc=2"
+        state: present
+        create: true
+      register: i915_guc
+
+    # Update initramfs
+    - name: Update initramfs
+      ansible.builtin.command:
+        cmd: update-initramfs -u
+      register: initramfs_update
+      when: i915_guc.changed
+
+    # update grub
+    - name: Update grub
+      ansible.builtin.command:
+        cmd: update-grub
+      register: grub_update
+      when: initramfs_update.changed
+
+    # reboot
+    - name: Reboot
+      ansible.builtin.reboot:
+      when: grub_update.changed

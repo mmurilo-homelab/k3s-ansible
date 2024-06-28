@@ -3,17 +3,18 @@ k3s_cluster:
   children:
     server:
       hosts:
-        192.168.101.115:
+        10.0.1.2:
     agent:
       hosts:
-        192.168.101.116:
+        10.0.1.3:
   # Required Vars
   vars:
     ansible_become: true
     ansible_become_user: root
     ansible_become_method: su
+    ansible_become_flags: "-"
     ansible_port: 22
-    # ansible_user: set as envireomnt variable
+    # ansible_user: set as environment variable
     k3s_version: v1.29.5+k3s1
     # The token should be a random string of reasonable length. You can generate
     # one with the following commands:
@@ -40,11 +41,11 @@ k3s_cluster:
     # airgap_dir: /tmp/k3s-airgap-images
 
     extra_manifests: ["../my-cluster/manifests/"]
-    server_config_yaml:  |
+    server_config_yaml: |
       cluster-init: true
       disable:
         - traefik
-      
+
     #   This is now an inner yaml file. Maintain the indentation.
     #   YAML here will be placed as the content of /etc/rancher/k3s/config.yaml
     #   See https://docs.k3s.io/installation/configuration#configuration-file

@@ -1,21 +1,12 @@
 ---
-- name: Cluster prep
-  hosts: k3s_cluster
+- name: prerequisites
+  hosts: all
   gather_facts: true
   become: true
-  roles:
-    - role: prereq
-    - role: airgap
-    - role: raspberrypi
+  tasks:
+    - name: include prereq
+      ansible.builtin.include_tasks:
+        file: prereq.yml
 
-- name: Setup K3S server
-  hosts: server
-  become: true
-  roles:
-    - role: k3s_server
-
-- name: Setup K3S agent
-  hosts: agent
-  become: true
-  roles:
-    - role: k3s_agent
+- name: k3s
+  ansible.builtin.import_playbook: ../playbooks/site.yml
